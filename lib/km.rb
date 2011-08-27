@@ -33,7 +33,7 @@ class KM
     end
 
     def set(p)
-      p['_p'] = name
+      p['_p'] = @id
       p['_t'] = Time.now.to_i.to_s
       p['_k'] = @key
       HTTParty.delay.get('http://trk.kissmetrics.com/s?' + p.to_params)
