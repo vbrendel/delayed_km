@@ -1,13 +1,11 @@
 Delayed KM
 ==========
 
-Intended as replacement for the Kissmetrics provided gem but using delayed_job instead of cron.
+Alternative for the Kissmetrics provided gem but using delayed_job instead of cron. This will suit Heroku users.
 
-If you are using Heroku for hosting you will find this much simpler than having to configure cron and a temp folder.
+This will become a gem in the future, but for now, include in your Gemfile:
 
-Include in your Gemfile:
-
-  gem 'httparty'
-  gem 'delayed_job'
+    gem 'httparty'
+    gem 'delayed_job'
 
 and copy the file lib/km.rb to your app/models directory
