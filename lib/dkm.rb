@@ -39,7 +39,8 @@ class DKM
         props['_t'] = Time.now.to_i.to_s
       end
 
-      HTTParty.delay.get("http://#{DKM.host}/e?" + props.to_params)
+
+      delay_query("e",props)
     end
 
     def alias(name, alias_to)
@@ -50,7 +51,8 @@ class DKM
           '_p' => name,
           '_k' => @key,
       }
-      HTTParty.delay.get("http://#{DKM.host}/a?" + p.to_params)
+
+      delay_query("a",p)
     end
 
     def set(props = {})
@@ -66,14 +68,21 @@ class DKM
       else
         props['_t'] = Time.now.to_i.to_s
       end
-
-      HTTParty.delay.get("http://#{DKM.host}/s?" + props.to_params)
+      delay_query("s",props)
     end
 
     protected
     #This is from the offical km.rb
     def hash_keys_to_str(hash)
       Hash[*hash.map { |k, v| k.class == Symbol ? [k.to_s, v] : [k, v] }.flatten] # convert all keys to strings
+    end
+    def delay_query(type, props)
+      params = []
+      props.each do |k,v|
+        params << "#{CGI.escape(k.to_s)}=#{CGI.escape(v.to_s)}"
+      end
+      query = params.join("&")
+      HTTParty.delay.get("http://#{DKM.host}/#{type}?#{query}")
     end
   end
 

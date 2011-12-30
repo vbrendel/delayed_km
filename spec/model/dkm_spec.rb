@@ -38,6 +38,8 @@ describe DKM do
 
     def set_record_mock(action, args = {}, date = nil)
       @delay.should_receive(:get) do |url|
+
+        expect { URI.parse(url) }.should_not raise_error
         uri = URI.parse(url)
         q = CGI.parse(uri.query)
         uri.host.should == DKM.host
@@ -66,16 +68,20 @@ describe DKM do
       DKM.record("Paid Us", {"_t" => (@now - 1.day).to_i.to_s})
     end
     it "should allow you to record an event with additional properties" do
-      set_record_mock("Paid Us", {"plan" => "Standard", "amount" => 25.00})
-      DKM.record("Paid Us", {"plan" => "Standard", "amount" => 25.00})
+      set_record_mock("Paid Us", {"plan" => "Standard", "amount" => "25.00"})
+      DKM.record("Paid Us", {"plan" => "Standard", "amount" => "25.00"})
+    end
+    it "should allow you to record an event with additional properties that have special characters in the keys" do
+      set_record_mock("Paid Us", {"plan" => "Standard", "amount of $" => "25.00"})
+      DKM.record("Paid Us", {"plan" => "Standard", "amount of $" => "25.00"})
     end
     it "should allow you to record an event with additional properties for a time in the past" do
-      set_record_mock("Paid Us", {"plan" => "Standard", "amount" => 25.00}, @now - 1.day)
-      DKM.record("Paid Us", {"plan" => "Standard", "amount" => 25.00, "_t" => (@now - 1.day).to_i.to_s})
+      set_record_mock("Paid Us", {"plan" => "Standard", "amount" => "25.00"}, @now - 1.day)
+      DKM.record("Paid Us", {"plan" => "Standard", "amount" => "25.00", "_t" => (@now - 1.day).to_i.to_s})
     end
     it "should allow you to use symbols for keys on the additional properties" do
-      set_record_mock("Paid Us", {"plan" => "Standard", "amount" => 25.00}, @now - 1.day)
-      DKM.record("Paid Us", {:plan => "Standard", :amount => 25.00, :_t => (@now - 1.day).to_i.to_s})
+      set_record_mock("Paid Us", {"plan" => "Standard", "amount" => "25.00"}, @now - 1.day)
+      DKM.record("Paid Us", {:plan => "Standard", :amount => "25.00", :_t => (@now - 1.day).to_i.to_s})
     end
   end
   context "set" do
@@ -90,6 +96,7 @@ describe DKM do
 
     def set_set_mock(args = {}, date = nil)
       @delay.should_receive(:get) do |url|
+        expect { URI.parse(url) }.should_not raise_error
         uri = URI.parse(url)
         q = CGI.parse(uri.query)
         uri.host.should == DKM.host
@@ -114,8 +121,12 @@ describe DKM do
       DKM.set({"plan" => "Standard"})
     end
     it "should allow you to set multiple properties on a profile" do
-      set_set_mock({"plan" => "Standard", "amount" => 25.00})
-      DKM.set({"plan" => "Standard", "amount" => 25.00})
+      set_set_mock({"plan" => "Standard", "amount" => "25.00"})
+      DKM.set({"plan" => "Standard", "amount" => "25.00"})
+    end
+    it "should allow you to set  properties on a profile with special characters" do
+      set_set_mock({"plan" => "Standard", "amount of $" => "25.00"})
+      DKM.set({"plan" => "Standard", "amount of $" => "25.00"})
     end
     it "should allow you to set a property on a profile for a time in the past" do
 
@@ -123,12 +134,12 @@ describe DKM do
       DKM.set({"plan" => "Standard", "_t" => (@now - 1.day).to_i.to_s})
     end
     it "should allow you to set multiple properties on a profile for a time in the past" do
-      set_set_mock({"plan" => "Standard", "amount" => 25.00}, @now - 1.day)
-      DKM.set({"plan" => "Standard", "amount" => 25.00, "_t" => (@now - 1.day).to_i.to_s})
+      set_set_mock({"plan" => "Standard", "amount" => "25.00"}, @now - 1.day)
+      DKM.set({"plan" => "Standard", "amount" => "25.00", "_t" => (@now - 1.day).to_i.to_s})
     end
     it "should allow you to use symbols for keys on  properties" do
-      set_set_mock({"plan" => "Standard", "amount" => 25.00}, @now - 1.day)
-      DKM.set({:plan => "Standard", :amount => 25.00, :_t => (@now - 1.day).to_i.to_s})
+      set_set_mock({"plan" => "Standard", "amount" => "25.00"}, @now - 1.day)
+      DKM.set({:plan => "Standard", :amount => "25.00", :_t => (@now - 1.day).to_i.to_s})
     end
   end
 
@@ -146,8 +157,11 @@ describe DKM do
     end
 
     def set_identify_mock(old_name, new_name)
+
       @delay.should_receive(:get) do |url|
+        expect { URI.parse(url) }.should_not raise_error
         uri = URI.parse(url)
+
         q = CGI.parse(uri.query)
         uri.host.should == DKM.host
         uri.path.should == "/a"
@@ -158,8 +172,8 @@ describe DKM do
     end
 
     it "should allow you to alias a user" do
-      set_identify_mock("sam@aol.com","will@aol.com")
-      DKM.alias("sam@aol.com","will@aol.com")
+      set_identify_mock("sam@aol.com", "will@aol.com")
+      DKM.alias("sam@aol.com", "will@aol.com")
     end
   end
 
