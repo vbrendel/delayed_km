@@ -1,5 +1,6 @@
 #KissMetrics with using delayed jobs
 #Based on https://github.com/vbrendel/delayed_km/blob/master/lib/km.rb
+#include HTTParty
 class DKM
   @id = nil
   @key = nil
@@ -40,7 +41,7 @@ class DKM
       end
 
 
-      delay_query("e",props)
+      delay_query("e", props)
     end
 
     def alias(name, alias_to)
@@ -52,7 +53,7 @@ class DKM
           '_k' => @key,
       }
 
-      delay_query("a",p)
+      delay_query("a", p)
     end
 
     def set(props = {})
@@ -68,7 +69,15 @@ class DKM
       else
         props['_t'] = Time.now.to_i.to_s
       end
-      delay_query("s",props)
+      delay_query("s", props)
+    end
+
+    def get(url)
+      begin
+        return HTTParty.get(url)
+      rescue Exception => e
+        raise e.exception(e.message)
+      end
     end
 
     protected
@@ -76,13 +85,14 @@ class DKM
     def hash_keys_to_str(hash)
       Hash[*hash.map { |k, v| k.class == Symbol ? [k.to_s, v] : [k, v] }.flatten] # convert all keys to strings
     end
+
     def delay_query(type, props)
       params = []
-      props.each do |k,v|
+      props.each do |k, v|
         params << "#{CGI.escape(k.to_s)}=#{CGI.escape(v.to_s)}"
       end
       query = params.join("&")
-      HTTParty.delay.get("http://#{DKM.host}/#{type}?#{query}")
+      DKM.delay.get("http://#{DKM.host}/#{type}?#{query}")
     end
   end
 

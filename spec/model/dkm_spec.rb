@@ -12,6 +12,12 @@ describe DKM do
     DKM.identity.should == "BOB"
 
   end
+  it "should be able to make an http request" do
+    HTTParty.should_receive(:get).with("http://www.truckingoffice.com")
+    DKM.get("http://www.truckingoffice.com")
+
+  end
+  it "should trigger exception notifier if it is installed"
   it "should raise an error if no key is provided" do
     DKM.init(nil)
     expect { DKM.record("") }.should raise_error(ArgumentError, "You must set an API key")
@@ -33,7 +39,7 @@ describe DKM do
       DKM.init("DKM_KEY")
       DKM.identify("bob@aol.com")
       @delay = mock
-      HTTParty.stub!(:delay).and_return(@delay)
+      DKM.stub!(:delay).and_return(@delay)
     end
 
     def set_record_mock(action, args = {}, date = nil)
@@ -91,7 +97,7 @@ describe DKM do
       DKM.init("DKM_KEY")
       DKM.identify("bob@aol.com")
       @delay = mock
-      HTTParty.stub!(:delay).and_return(@delay)
+      DKM.stub!(:delay).and_return(@delay)
     end
 
     def set_set_mock(args = {}, date = nil)
@@ -153,7 +159,7 @@ describe DKM do
       DKM.init("DKM_KEY")
       DKM.identify("bob@aol.com")
       @delay = mock
-      HTTParty.stub!(:delay).and_return(@delay)
+      DKM.stub!(:delay).and_return(@delay)
     end
 
     def set_identify_mock(old_name, new_name)
