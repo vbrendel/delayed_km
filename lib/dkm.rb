@@ -1,7 +1,7 @@
 #KissMetrics with using delayed jobs
 #Based on https://github.com/vbrendel/delayed_km/blob/master/lib/km.rb
 #include HTTParty
-class DKM
+class KM
   @id = nil
   @key = nil
 
@@ -92,7 +92,7 @@ class DKM
         params << "#{CGI.escape(k.to_s)}=#{CGI.escape(v.to_s)}"
       end
       query = params.join("&")
-      DKM.delay.get("http://#{DKM.host}/#{type}?#{query}")
+      KM.delay.get("http://#{DKM.host}/#{type}?#{query}")
     end
   end
 
